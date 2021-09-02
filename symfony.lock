@@ -59,6 +59,9 @@
     "doctrine/lexer": {
         "version": "1.2.1"
     },
+    "doctrine/migrations": {
+        "version": "3.2.1"
+    },
     "doctrine/orm": {
         "version": "2.7.5"
     },
@@ -74,8 +77,14 @@
     "egulias/email-validator": {
         "version": "3.1.1"
     },
+    "friendsofphp/proxy-manager-lts": {
+        "version": "v1.0.5"
+    },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
+    },
+    "laminas/laminas-code": {
+        "version": "4.4.2"
     },
     "monolog/monolog": {
         "version": "1.26.1"
@@ -118,6 +127,15 @@
     },
     "swiftmailer/swiftmailer": {
         "version": "v5.4.12"
+    },
+    "symfony/apache-pack": {
+        "version": "1.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "1.0",
+            "ref": "9d254a22efca7264203eea98b866f16f944b2f09"
+        }
     },
     "symfony/asset": {
         "version": "v5.3.4"
