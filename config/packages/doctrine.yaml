@@ -23,11 +23,4 @@ doctrine:
                 type: annotation
                 dir: '%kernel.project_dir%/src/Entity'
                 prefix: 'App\Entity'
-                alias: App
-            # REMOVE when AppBundle is removed :
-            AppBundle:
-                is_bundle: false
-                type: annotation
-                dir: '%kernel.project_dir%/src/AppBundle/Entity'
-                prefix: 'AppBundle\Entity'
                 alias: AppBundle
