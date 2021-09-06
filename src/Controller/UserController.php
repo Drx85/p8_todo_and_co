@@ -4,20 +4,29 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserType;
+use App\Repository\UserRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
 {
+	private UserPasswordHasherInterface $passwordHasher;
+	
+	public function __construct(UserPasswordHasherInterface $passwordHasher)
+	{
+		$this->passwordHasher = $passwordHasher;
+	}
     /**
      * @Route("/users", name="user_list")
      */
-    public function listAction(): Response
+    public function listAction(UserRepository $repository): Response
 	{
-        return $this->render('user/list.html.twig', ['users' => $this->getDoctrine()->getRepository('App:User')->findAll()]);
+		$users = $repository->findAll();
+        return $this->render('user/list.html.twig', compact('users'));
     }
 
     /**
@@ -32,8 +41,7 @@ class UserController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
-            $user->setPassword($password);
+			$user->setPassword($this->passwordHasher->hashPassword($user, $user->getPassword()));
 
             $em->persist($user);
             $em->flush();
@@ -56,8 +64,7 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
-            $user->setPassword($password);
+			$user->setPassword($this->passwordHasher->hashPassword($user, $user->getPassword()));
 
             $this->getDoctrine()->getManager()->flush();
 

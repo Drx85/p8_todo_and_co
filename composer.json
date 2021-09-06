@@ -23,6 +23,7 @@
         "symfony/asset": "*",
         "symfony/console": "^5.3.7",
         "symfony/flex": "^1.15",
+        "symfony/form": "^5.3.7",
         "symfony/framework-bundle": "^5.3.7",
         "symfony/monolog-bundle": "3.7.0",
         "symfony/polyfill-apcu": "^1.23",
