@@ -9,42 +9,38 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-/**
- * @ORM\Table("user")
- * @ORM\Entity(repositoryClass=UserRepository::class)
- * @UniqueEntity("email")
- */
+#[ORM\Table('user')]
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+#[UniqueEntity('email')]
+
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Column(type: 'integer')]
+	#[ORM\Id]
+	#[ORM\GeneratedValue(strategy: 'AUTO')]
+	
     private $id;
-
-    /**
-     * @ORM\Column(type="string", length=25, unique=true)
-     * @Assert\NotBlank(message="Vous devez saisir un nom d'utilisateur.")
-     */
+    
+    #[ORM\Column(type: 'string', unique: true)]
+	#[Assert\Length(max: 25)]
+	#[Assert\NotBlank(message: "Vous devez saisir un nom d'utilisateur.")]
+	
     private $username;
 	
-	/**
-	 * @ORM\Column(type="json")
-	 */
+	#[ORM\Column(type: 'json')]
+	
 	private $roles = [];
-
-    /**
-	 * @var string
-     * @ORM\Column(type="string", length=64)
-     */
+   
+    #[ORM\Column(type: 'string')]
+	#[Assert\Length(max: 64)]
+	
     private $password;
-
-    /**
-     * @ORM\Column(type="string", length=60, unique=true)
-     * @Assert\NotBlank(message="Vous devez saisir une adresse email.")
-     * @Assert\Email(message="Le format de l'adresse n'est pas correcte.")
-     */
+   
+    #[ORM\Column(type: 'string', unique: true)]
+	#[Assert\Length(max: 60)]
+	#[Assert\NotBlank(message: 'Vous devez saisir une adresse email.')]
+	#[Assert\Email(message: "Le format de l'adresse n'est pas correct.")]
+	
     private $email;
 
     public function getId(): ?int

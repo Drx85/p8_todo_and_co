@@ -5,40 +5,33 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity
- * @ORM\Entity(repositoryClass=App\Repository\TaskRepository::class)
- * @ORM\Table
- */
+#[ORM\Entity(repositoryClass: \App\Repository\TaskRepository::class)]
+#[ORM\Table]
+
 class Task
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    #[ORM\Column(type: 'integer')]
+	#[ORM\Id]
+	#[ORM\GeneratedValue(strategy: 'AUTO')]
+    
     private $id;
-
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    
+    #[ORM\Column(type: 'datetime')]
+    
     private $createdAt;
-
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank(message="Vous devez saisir un titre.")
-     */
+  
+    #[ORM\Column(type: 'string')]
+	#[Assert\NotBlank(message: 'Vous devez saisir un titre.')]
+	
     private $title;
-
-    /**
-     * @ORM\Column(type="text")
-     * @Assert\NotBlank(message="Vous devez saisir du contenu.")
-     */
+    
+    #[ORM\Column(type: 'text')]
+	#[Assert\NotBlank(message: 'Vous devez saisir du contenu.')]
+    
     private $content;
-
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    
+    #[ORM\Column(type: 'boolean')]
+    
     private $isDone;
 
     public function __construct()

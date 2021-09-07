@@ -14,19 +14,17 @@ use Symfony\Component\HttpFoundation\Response;
 
 class TaskController extends AbstractController
 {
-    /**
-     * @Route("/tasks", name="task_list")
-     */
+	#[Route('/tasks', name: 'task_list')]
+    
     public function listAction(TaskRepository $repository): Response
 	{
 		$tasks = $repository->findAll();
         return $this->render('task/list.html.twig', compact('tasks'));
     }
-
-    /**
-     * @Route("/tasks/create", name="task_create")
-     */
-    public function createAction(Request $request)
+	
+	#[Route('/tasks/create', name: 'task_create')]
+	
+	public function createAction(Request $request)
     {
         $task = new Task();
         $form = $this->createForm(TaskType::class, $task);
@@ -46,9 +44,8 @@ class TaskController extends AbstractController
         return $this->render('task/create.html.twig', ['form' => $form->createView()]);
     }
 
-    /**
-     * @Route("/tasks/{id}/edit", name="task_edit")
-     */
+	#[Route('/tasks/{id}/edit', name: 'task_edit')]
+	
     public function editAction(Task $task, Request $request)
     {
         $form = $this->createForm(TaskType::class, $task);
@@ -68,9 +65,8 @@ class TaskController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/tasks/{id}/toggle", name="task_toggle")
-     */
+	#[Route('/tasks/{id}/toggle', name: 'task_toggle')]
+	
     public function toggleTaskAction(Task $task): RedirectResponse
 	{
         $task->toggle(!$task->isDone());
@@ -80,10 +76,9 @@ class TaskController extends AbstractController
 
         return $this->redirectToRoute('task_list');
     }
-
-    /**
-     * @Route("/tasks/{id}/delete", name="task_delete")
-     */
+    
+	#[Route('/tasks/{id}/delete', name: 'task_delete')]
+	
     public function deleteTaskAction(Task $task): RedirectResponse
 	{
         $em = $this->getDoctrine()->getManager();
