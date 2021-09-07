@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
@@ -75,4 +75,13 @@ class UserController extends AbstractController
 
         return $this->render('user/edit.html.twig', ['form' => $form->createView(), 'user' => $user]);
     }
+	
+	/**
+	 * @Route("/login/invalid-credentials", name="invalid-credentials")
+	 */
+	public function invalidCredentials(): Response
+	{
+		$this->addFlash('error','Informations de connexion incorrectes.');
+		return $this->redirectToRoute('homepage');
+	}
 }
