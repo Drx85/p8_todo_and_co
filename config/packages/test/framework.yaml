@@ -2,3 +2,6 @@ framework:
     test: true
     session:
         storage_id: session.storage.mock_file
+liip_test_fixtures:
+    cache_db:
+        sqlite: 'Liip\TestFixturesBundle\Services\DatabaseBackup\SqliteDatabaseBackup'

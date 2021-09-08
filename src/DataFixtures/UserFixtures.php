@@ -18,13 +18,16 @@ class UserFixtures extends Fixture
 	{
 		$this->passwordHasher = $passwordHasher;
 	}
+	
 	public function load(ObjectManager $manager)
 	{
-		$user = new User();
-		$user->setEmail('test@test.fr');
-		$user->setUsername('test');
-		$user->setPassword($this->passwordHasher->hashPassword($user, 'test'));
-		$manager->persist($user);
+		for ($i = 0; $i < 10; $i++) {
+			$user = new User();
+			$user->setEmail("test$i@test.fr")
+				->setUsername("test$i")
+				->setPassword($this->passwordHasher->hashPassword($user, 'test'));
+			$manager->persist($user);
+		}
 		$manager->flush();
 	}
 }

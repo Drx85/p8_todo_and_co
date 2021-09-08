@@ -32,7 +32,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 	private $roles = [];
    
     #[ORM\Column(type: 'string')]
-	#[Assert\Length(max: 64)]
+	#[Assert\Length(min: 6, max: 64)]
+	#[Assert\NotBlank(message: "Vous devez saisir un mot de passe.")]
 	
     private $password;
    

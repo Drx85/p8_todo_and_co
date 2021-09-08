@@ -1,0 +1,7 @@
+App\Entity\User:
+    user:
+        username: 'test'
+        email: 'test@test.fr'
+        roles: "[]"
+#       plaintext: 'testest' :
+        password: '\$2y\$10\$bJS7vh7UIeLCUPjVhKcp4eM2Y4l9mqscvGtM8qEfoi.HfXoAlXnou'
