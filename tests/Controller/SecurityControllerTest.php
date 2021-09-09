@@ -49,7 +49,7 @@ class SecurityControllerTest extends WebTestCase
 		$this->assertResponseRedirects('/login/invalid-credentials');
 	}
 	
-	public function testSuccessfulLogin()
+	public function testSuccessfullLogin()
 	{
 		$this->databaseTool->loadAliceFixture([dirname(__DIR__) . '/Fixtures/user.yaml']);
 		$crawler = $this->client->request('GET', '/login');
@@ -58,6 +58,7 @@ class SecurityControllerTest extends WebTestCase
 			'password' => 'testtest'
 		]);
 		$this->client->submit($form);
+		$this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
 		$this->assertResponseRedirects('/');
 		$this->assertIsObject(unserialize($this->client->getContainer()->get('session')->get('_security_main')));
 	}

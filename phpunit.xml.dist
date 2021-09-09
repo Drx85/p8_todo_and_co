@@ -27,8 +27,19 @@
             <directory>tests</directory>
         </testsuite>
     </testsuites>
+	
+	<coverage cacheDirectory=".phpunit.cache/code-coverage"
+			  processUncoveredFiles="true"
+			  includeUncoveredFiles="true"
+			  pathCoverage="false"
+			  ignoreDeprecatedCodeUnits="true"
+			  disableCodeCoverageIgnore="true">
+		<include>
+			<directory suffix=".php">src</directory>
+		</include>
+	</coverage>
 
-    <filter>
+<!--    <filter>
         <whitelist>
             <directory>src</directory>
             <exclude>
@@ -37,5 +48,6 @@
                 <directory>src/*/Bundle/*Bundle/Resources</directory>
             </exclude>
         </whitelist>
-    </filter>
+    </filter>-->
+
 </phpunit>
