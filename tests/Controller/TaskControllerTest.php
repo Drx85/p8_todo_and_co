@@ -44,14 +44,18 @@ class TaskControllerTest extends WebTestCase
 	
 	public function testIndexTasks()
 	{
-		$this->connectClient();
+		$this->loadTaskAndConnectClient();
 		$this->client->request('GET', '/tasks');
 		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
+		$this->assertSelectorExists('.thumbnail');
 	}
 	
 	public function testSuccessfullCreateTask()
 	{
-		$this->connectClient();
+		$this->databaseTool->loadAliceFixture([dirname(__DIR__) . '/Fixtures/user.yaml']);
+		$userRepository = static::getContainer()->get(UserRepository::class);
+		$testUser = $userRepository->findOneBy(['username' => 'test']);
+		$this->client->loginUser($testUser);
 		$crawler = $this->client->request('POST', '/tasks/create');
 		$form = $crawler->selectButton('Ajouter')->form([
 			'task[title]' => 'testsuccess',
@@ -105,26 +109,15 @@ class TaskControllerTest extends WebTestCase
 		$this->assertNull(self::getContainer()->get(TaskRepository::class)->findOneBy(['content' => 'editsuccess']));
 	}
 	
-	
-	
 	private function loadTaskAndConnectClient()
 	{
-		$this->databaseTool->loadAliceFixture([dirname(__DIR__) . '/Fixtures/task.yaml']);
+		$this->databaseTool->loadAliceFixture([dirname(__DIR__) . '/Fixtures/task_user.yaml']);
 		$userRepository = static::getContainer()->get(UserRepository::class);
 		$testUser = $userRepository->findOneBy(['username' => 'test']);
 		
-		$this->databaseTool->loadAliceFixture([dirname(__DIR__) . '/Fixtures/task.yaml']);
 		$userRepository = static::getContainer()->get(TaskRepository::class);
 		$this->task = $userRepository->findOneBy(['title' => 'test']);
 		
-		$this->client->loginUser($testUser);
-	}
-	
-	private function connectClient()
-	{
-		$this->databaseTool->loadAliceFixture([dirname(__DIR__) . '/Fixtures/user.yaml']);
-		$userRepository = static::getContainer()->get(UserRepository::class);
-		$testUser = $userRepository->findOneBy(['username' => 'test']);
 		$this->client->loginUser($testUser);
 	}
 }
