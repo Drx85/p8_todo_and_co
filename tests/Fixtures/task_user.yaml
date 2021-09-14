@@ -1,13 +1,40 @@
 App\Entity\Task:
-  task:
-    createdAt: <(new \DateTime('2021-09-09'))>
-    title: 'test'
-    content: 'test'
+    task:
+        createdAt: <(new \DateTime('2021-09-09'))>
+        title: 'test'
+        content: 'test'
+        user: '@user'
+    anonymous_task:
+        createdAt: <(new \DateTime('2021-09-09'))>
+        title: 'anonymous_task'
+        content: 'test'
+        user: '@anonymous_user'
 
 App\Entity\User:
-  user:
-    username: 'test'
-    email: 'test@test.fr'
-    roles: "[]"
-    #       plaintext: 'testest' :
-    password: '\$2y\$10\$bJS7vh7UIeLCUPjVhKcp4eM2Y4l9mqscvGtM8qEfoi.HfXoAlXnou'
+    user:
+        username: 'test'
+        email: 'test@test.fr'
+        roles: "[]"
+        #       plaintext: 'testest' :
+        password: '\$2y\$10\$bJS7vh7UIeLCUPjVhKcp4eM2Y4l9mqscvGtM8qEfoi.HfXoAlXnou'
+    user_not_linked:
+        username: 'user_not_linked'
+        email: 'user_not_linked@test.fr'
+        roles: "[]"
+        #       plaintext: 'testest' :
+        password: '\$2y\$10\$bJS7vh7UIeLCUPjVhKcp4eM2Y4l9mqscvGtM8qEfoi.HfXoAlXnou'
+    anonymous_user:
+        username: 'anonyme'
+        email: 'anonymous_user@test.fr'
+        roles: "[]"
+        #       plaintext: 'testest' :
+        password: '\$2y\$10\$bJS7vh7UIeLCUPjVhKcp4eM2Y4l9mqscvGtM8qEfoi.HfXoAlXnou'
+    admin:
+        username: 'admin'
+        email: 'admin@test.fr'
+        roles: [ 'ROLE_ADMIN' ]
+        #       plaintext: 'testest' :
+        password: '\$2y\$10\$bJS7vh7UIeLCUPjVhKcp4eM2Y4l9mqscvGtM8qEfoi.HfXoAlXnou'
+
+
+

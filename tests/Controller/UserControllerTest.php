@@ -22,10 +22,24 @@ class UserControllerTest extends WebTestCase
 	
 	public function testIndexUsers()
 	{
-		$this->loadUserAndConnectClient();
+		$this->loadUserAndConnectClient(true);
 		$this->client->request('GET', '/users');
 		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
 		$this->assertSelectorTextContains('td', "test");
+	}
+	
+	public function testAccessManageUsersPageWhenNotLoggedAsAdmin()
+	{
+		$this->loadUserAndConnectClient();
+		$this->client->request('GET', '/users');
+		$this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+	}
+	
+	public function testAccessManageUsersPageWhenNotLoggedIn()
+	{
+		$this->client->request('GET', '/users');
+		$this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+		$this->assertResponseRedirects('http://localhost/login');
 	}
 	
 	public function testSuccessfullCreateUser()
@@ -40,7 +54,7 @@ class UserControllerTest extends WebTestCase
 		]);
 		$this->client->submit($form);
 		$this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
-		$this->assertResponseRedirects('/users');
+		$this->assertResponseRedirects('/');
 		$this->client->followRedirect();
 		$this->assertSelectorTextContains('.alert-success', "L'utilisateur a bien été ajouté.");
 		$this->assertNotNull(self::getContainer()->get(UserRepository::class)->findOneBy(['username' => 'testsuccess']));
@@ -64,7 +78,7 @@ class UserControllerTest extends WebTestCase
 	
 	public function testSuccessfullEditUser()
 	{
-		$this->loadUserAndConnectClient();
+		$this->loadUserAndConnectClient(true);
 		$crawler = $this->client->request('POST', '/users/' . $this->user->getId() . '/edit');
 		$form = $crawler->selectButton('Modifier')->form([
 			'user[username]' => 'editsuccess',
@@ -79,11 +93,32 @@ class UserControllerTest extends WebTestCase
 		$this->assertNotNull(self::getContainer()->get(UserRepository::class)->findOneBy(['username' => 'editsuccess']));
 	}
 	
-	private function loadUserAndConnectClient()
+	public function testEditUserWhenNotLoggedAsAdmin()
+	{
+		$this->loadUserAndConnectClient();
+		$this->client->request('POST', '/users/' . $this->user->getId() . '/edit');
+		$this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+	}
+	
+	public function testEditUserWhenNotLoggedIn()
 	{
 		$this->databaseTool->loadAliceFixture([dirname(__DIR__) . '/Fixtures/user.yaml']);
 		$userRepository = static::getContainer()->get(UserRepository::class);
 		$this->user = $userRepository->findOneBy(['username' => 'test']);
+		$this->client->request('POST', '/users/' . $this->user->getId() . '/edit');
+		$this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+		$this->assertResponseRedirects('http://localhost/login');
+	}
+	
+	/**
+	 * @param false $roleAdmin
+	 */
+	private function loadUserAndConnectClient($roleAdmin = false)
+	{
+		$this->databaseTool->loadAliceFixture([dirname(__DIR__) . '/Fixtures/user.yaml']);
+		$userRepository = static::getContainer()->get(UserRepository::class);
+		$this->user = $userRepository->findOneBy(['username' => 'test']);
+		if ($roleAdmin) $this->user = $userRepository->findOneBy(['username' => 'admin']);
 		$this->client->loginUser($this->user);
 	}
 }

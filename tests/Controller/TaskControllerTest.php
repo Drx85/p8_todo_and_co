@@ -67,6 +67,7 @@ class TaskControllerTest extends WebTestCase
 		$this->client->followRedirect();
 		$this->assertSelectorTextContains('.alert-success', "La tâche a été bien été ajoutée.");
 		$this->assertNotNull(self::getContainer()->get(TaskRepository::class)->findOneBy(['title' => 'testsuccess']));
+		$this->assertNotNull(self::getContainer()->get(TaskRepository::class)->findOneBy(['user' => $testUser]));
 	}
 	
 	public function testSuccessfullEditTask()
@@ -109,11 +110,38 @@ class TaskControllerTest extends WebTestCase
 		$this->assertNull(self::getContainer()->get(TaskRepository::class)->findOneBy(['content' => 'editsuccess']));
 	}
 	
-	private function loadTaskAndConnectClient()
+	public function testInvalidDeleteTaskWithUserNotLinkedToIt()
+	{
+		$this->loadTaskAndConnectClient(true);
+		$this->client->request('POST', '/tasks/' . $this->task->getId() . '/delete');
+		$this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+	}
+	
+	public function testSuccessfullDeleteAnonymousTask()
+	{
+		$this->databaseTool->loadAliceFixture([dirname(__DIR__) . '/Fixtures/task_user.yaml']);
+		$userRepository = static::getContainer()->get(UserRepository::class);
+		$testUser = $userRepository->findOneBy(['username' => 'admin']);
+		$userRepository = static::getContainer()->get(TaskRepository::class);
+		$this->task = $userRepository->findOneBy(['title' => 'anonymous_task']);
+		$this->client->loginUser($testUser);
+		$this->client->request('POST', '/tasks/' . $this->task->getId() . '/delete');
+		$this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+		$this->assertResponseRedirects('/tasks');
+		$this->client->followRedirect();
+		$this->assertSelectorTextContains('.alert-success', "La tâche a bien été supprimée.");
+		$this->assertNull(self::getContainer()->get(TaskRepository::class)->findOneBy(['content' => 'editsuccess']));
+	}
+	
+	/**
+	 * @param bool $userNotLinkedToTask
+	 */
+	private function loadTaskAndConnectClient(bool $userNotLinkedToTask = false)
 	{
 		$this->databaseTool->loadAliceFixture([dirname(__DIR__) . '/Fixtures/task_user.yaml']);
 		$userRepository = static::getContainer()->get(UserRepository::class);
 		$testUser = $userRepository->findOneBy(['username' => 'test']);
+		if ($userNotLinkedToTask) $testUser = $userRepository->findOneBy(['username' => 'user_not_linked']);
 		
 		$userRepository = static::getContainer()->get(TaskRepository::class);
 		$this->task = $userRepository->findOneBy(['title' => 'test']);

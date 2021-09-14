@@ -3,5 +3,11 @@ App\Entity\User:
         username: 'test'
         email: 'test@test.fr'
         roles: "[]"
-#       plaintext: 'testest' :
+        #       plaintext: 'testest' :
+        password: '\$2y\$10\$bJS7vh7UIeLCUPjVhKcp4eM2Y4l9mqscvGtM8qEfoi.HfXoAlXnou'
+    admin:
+        username: 'admin'
+        email: 'admin@test.fr'
+        roles: ['ROLE_ADMIN']
+        #       plaintext: 'testest' :
         password: '\$2y\$10\$bJS7vh7UIeLCUPjVhKcp4eM2Y4l9mqscvGtM8qEfoi.HfXoAlXnou'

@@ -33,6 +33,14 @@ class Task
     #[ORM\Column(type: 'boolean')]
     
     private $isDone;
+	
+	#[ORM\ManyToOne(
+		targetEntity: User::class,
+		inversedBy: 'tasks'
+	)]
+	#[ORM\JoinColumn(nullable: false)]
+	
+	private $user;
 
     public function __construct()
     {
@@ -88,4 +96,16 @@ class Task
         $this->isDone = $flag;
         return $this;
     }
+	
+	public function getUser(): ?User
+	{
+		return $this->user;
+	}
+	
+	public function setUser(?User $user): self
+	{
+		$this->user = $user;
+		
+		return $this;
+	}
 }

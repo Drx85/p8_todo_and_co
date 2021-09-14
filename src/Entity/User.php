@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -43,6 +44,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 	#[Assert\Email(message: "Le format de l'adresse n'est pas correct.")]
 	
     private $email;
+
+	#[ORM\OneToMany(
+		mappedBy: 'user',
+		targetEntity: Task::class
+	)]
+	private $tasks;
 
     public function getId(): ?int
     {
@@ -123,5 +130,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 	public function getUsername(): string
 	{
 		return (string) $this->username;
+	}
+	
+	/**
+	 * @return Collection|Task[]
+	 */
+	public function getTasks(): Collection
+	{
+		return $this->tasks;
+	}
+	
+	public function addTask(Task $task): self
+	{
+		if (!$this->tasks->contains($task)) {
+			$this->tasks[] = $task;
+			$task->setUser($this);
+		}
+		
+		return $this;
 	}
 }

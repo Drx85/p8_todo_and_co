@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class TaskController extends AbstractController
 {
@@ -24,7 +25,7 @@ class TaskController extends AbstractController
 	
 	#[Route('/tasks/create', name: 'task_create')]
 	
-	public function createAction(Request $request)
+	public function createAction(Request $request, UserInterface $user)
     {
         $task = new Task();
         $form = $this->createForm(TaskType::class, $task);
@@ -33,6 +34,8 @@ class TaskController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
+            
+            $task->setUser($user);
 
             $em->persist($task);
             $em->flush();
@@ -81,6 +84,7 @@ class TaskController extends AbstractController
 	
     public function deleteTaskAction(Task $task): RedirectResponse
 	{
+		$this->denyAccessUnlessGranted('task_delete', $task);
         $em = $this->getDoctrine()->getManager();
         $em->remove($task);
         $em->flush();
