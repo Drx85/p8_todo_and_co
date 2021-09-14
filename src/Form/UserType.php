@@ -14,9 +14,6 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 class UserType extends AbstractType
 {
-	
-	
-	
 	public function __construct(private AuthorizationChecker $authorization) {}
 	
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -31,7 +28,6 @@ class UserType extends AbstractType
                 'second_options' => ['label' => 'Tapez le mot de passe à nouveau'],
             ])
             ->add('email', EmailType::class, ['label' => 'Adresse email']);
-	
 		if ($this->authorization->isGranted('ROLE_ADMIN')) {
 			$builder->add('roles', ChoiceType::class, array(
 				'choices' => array(
@@ -40,9 +36,7 @@ class UserType extends AbstractType
 				),
 				'label'   => 'Rôle'
 			));
-		
-			$builder->get('roles')
-				->addModelTransformer(new CallbackTransformer(
+			$builder->get('roles')->addModelTransformer(new CallbackTransformer(
 					function ($rolesArray) {
 						return count($rolesArray) ? $rolesArray[0] : null;
 					},

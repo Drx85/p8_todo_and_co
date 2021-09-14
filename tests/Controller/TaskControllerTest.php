@@ -47,7 +47,7 @@ class TaskControllerTest extends WebTestCase
 		$this->loadTaskAndConnectClient();
 		$this->client->request('GET', '/tasks');
 		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
-		$this->assertSelectorExists('.thumbnail');
+		$this->assertSelectorExists('.card');
 	}
 	
 	public function testSuccessfullCreateTask()
