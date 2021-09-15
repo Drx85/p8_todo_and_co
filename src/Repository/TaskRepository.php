@@ -14,37 +14,35 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class TaskRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, Task::class);
-    }
-
-    // /**
-    //  * @return Task[] Returns an array of Task objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('t.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Task
-    {
-        return $this->createQueryBuilder('t')
-            ->andWhere('t.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
+	public function __construct(ManagerRegistry $registry)
+	{
+		parent::__construct($registry, Task::class);
+	}
+	
+	/**
+	 * @return Task[] Returns an array of finished or not Task objects
+	 */
+	
+	public function findByIsDone(bool $isDone)
+	{
+		return $this->createQueryBuilder('t')
+			->andWhere('t.isDone = :isDone')
+			->setParameter('isDone', $isDone)
+			->orderBy('t.id', 'ASC')
+			->getQuery()
+			->getResult();
+	}
+	
+	
+	/*
+	public function findOneBySomeField($value): ?Task
+	{
+		return $this->createQueryBuilder('t')
+			->andWhere('t.exampleField = :val')
+			->setParameter('val', $value)
+			->getQuery()
+			->getOneOrNullResult()
+		;
+	}
+	*/
 }

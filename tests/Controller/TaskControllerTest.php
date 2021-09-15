@@ -35,6 +35,8 @@ class TaskControllerTest extends WebTestCase
 	{
 		return [
 			['/tasks'],
+			['/tasks-finished'],
+			['/tasks-not-finished'],
 			['/tasks/create'],
 			['/tasks/1/edit'],
 			['/tasks/1/toggle'],
@@ -42,10 +44,26 @@ class TaskControllerTest extends WebTestCase
 		];
 	}
 	
-	public function testIndexTasks()
+	public function testIndexAllTasks()
 	{
 		$this->loadTaskAndConnectClient();
 		$this->client->request('GET', '/tasks');
+		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
+		$this->assertSelectorExists('.card');
+	}
+	
+	public function testIndexDoneTasks()
+	{
+		$this->loadTaskAndConnectClient();
+		$this->client->request('GET', '/tasks-finished');
+		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
+		$this->assertSelectorExists('.card');
+	}
+	
+	public function testIndexNotDoneTasks()
+	{
+		$this->loadAnonymousNotDoneTaskandConnectAdminClient();
+		$this->client->request('GET', '/tasks-not-finished');
 		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
 		$this->assertSelectorExists('.card');
 	}
@@ -94,6 +112,18 @@ class TaskControllerTest extends WebTestCase
 		$this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
 		$this->assertResponseRedirects('/tasks');
 		$this->client->followRedirect();
+		$this->assertSelectorTextContains('.alert-success', "La tâche " . $this->task->getTitle() . " a bien été marquée comme non terminée.");
+		$updatedTask = self::getContainer()->get(TaskRepository::class)->findOneBy(['title' => 'test']);
+		$this->assertTrue(!$updatedTask->isDone());
+	}
+	
+	public function testSuccessFullReverseToggleTask()
+	{
+		$this->loadAnonymousNotDoneTaskandConnectAdminClient();
+		$this->client->request('POST', '/tasks/' . $this->task->getId() . '/toggle');
+		$this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+		$this->assertResponseRedirects('/tasks');
+		$this->client->followRedirect();
 		$this->assertSelectorTextContains('.alert-success', "La tâche " . $this->task->getTitle() . " a bien été marquée comme faite.");
 		$updatedTask = self::getContainer()->get(TaskRepository::class)->findOneBy(['title' => 'test']);
 		$this->assertTrue($updatedTask->isDone());
@@ -119,12 +149,7 @@ class TaskControllerTest extends WebTestCase
 	
 	public function testSuccessfullDeleteAnonymousTask()
 	{
-		$this->databaseTool->loadAliceFixture([dirname(__DIR__) . '/Fixtures/task_user.yaml']);
-		$userRepository = static::getContainer()->get(UserRepository::class);
-		$testUser = $userRepository->findOneBy(['username' => 'admin']);
-		$userRepository = static::getContainer()->get(TaskRepository::class);
-		$this->task = $userRepository->findOneBy(['title' => 'anonymous_task']);
-		$this->client->loginUser($testUser);
+		$this->loadAnonymousNotDoneTaskandConnectAdminClient();
 		$this->client->request('POST', '/tasks/' . $this->task->getId() . '/delete');
 		$this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
 		$this->assertResponseRedirects('/tasks');
@@ -146,6 +171,16 @@ class TaskControllerTest extends WebTestCase
 		$userRepository = static::getContainer()->get(TaskRepository::class);
 		$this->task = $userRepository->findOneBy(['title' => 'test']);
 		
+		$this->client->loginUser($testUser);
+	}
+	
+	private function loadAnonymousNotDoneTaskandConnectAdminClient()
+	{
+		$this->databaseTool->loadAliceFixture([dirname(__DIR__) . '/Fixtures/task_user.yaml']);
+		$userRepository = static::getContainer()->get(UserRepository::class);
+		$testUser = $userRepository->findOneBy(['username' => 'admin']);
+		$userRepository = static::getContainer()->get(TaskRepository::class);
+		$this->task = $userRepository->findOneBy(['title' => 'anonymous_task']);
 		$this->client->loginUser($testUser);
 	}
 }

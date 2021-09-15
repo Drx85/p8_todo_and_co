@@ -4,11 +4,13 @@ App\Entity\Task:
         title: 'test'
         content: 'test'
         user: '@user'
+        toggle: true
     anonymous_task:
         createdAt: <(new \DateTime('2021-09-09'))>
         title: 'anonymous_task'
         content: 'test'
         user: '@anonymous_user'
+        toggle: false
 
 App\Entity\User:
     user:

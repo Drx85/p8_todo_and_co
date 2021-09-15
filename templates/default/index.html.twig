@@ -7,9 +7,8 @@
 {% block body %}
 
 			<a href="{{ path('task_create') }}" class="btn btn-success mt-2 me-2">Créer une nouvelle tâche</a>
-
-			<a href="{{ path('task_list') }}" class="btn btn-info text-white mt-2 me-2">Consulter la liste des tâches à faire</a>
-
-			<a href="" class="btn btn-secondary mt-2 me-2">Consulter la liste des tâches terminées</a>
+	<a href="{{ path('task_list_not_finished') }}" class="btn btn-secondary text-white mt-2 me-2">Consulter les tâches à faire&nbsp;<i class="fas fa-times"></i></a>
+			<a href="{{ path('task_list_finished') }}" class="btn btn-secondary mt-2 me-2">Consulter les tâches terminées&nbsp;<i class="fas fa-check"></i></a>
+			<a href="{{ path('task_list') }}" class="btn btn-secondary mt-2 me-2">Consulter toutes les tâches</a>
 
 {% endblock %}

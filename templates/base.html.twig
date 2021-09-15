@@ -27,11 +27,21 @@
 </head>
 
 <body>
-<nav class="navbar navbar-light navbar-fixed-top" style="background-color: #e3f2fd;" role="navigation">
+<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
 	<div class="container">
 		<div class="navbar-header">
 			<a class="navbar-brand text-primary opacity-80" href={{ path('homepage') }}>To Do List app</a>
 			<img src="{{ asset('img/Logo_OpenClassrooms.png') }}" alt="OpenClassrooms"/>
+		</div>
+		<div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+			<div class="navbar-nav ms-auto">
+				{% if is_granted('ROLE_ADMIN') %}
+					<a class="nav-link" href="{{ path('user_list') }}">Liste des membres</a>
+				{% endif %}
+				{% if is_granted('ROLE_USER') %}
+				<a class="nav-link" href="{{ path('homepage') }}">Liste des tâches</a>
+				{% endif %}
+			</div>
 		</div>
 	</div>
 </nav>
@@ -70,7 +80,7 @@
 			{% block header_img %}<img class="slide-image" src="{{ asset('img/todolist_homepage.jpg') }}" alt="todo list">{% endblock %}
 		</div>
 	</div>
-
+	
 	<div class="row">
 		<div class="col-md-12 mb-2">
 			{% block body %}{% endblock %}
