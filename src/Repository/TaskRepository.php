@@ -28,7 +28,7 @@ class TaskRepository extends ServiceEntityRepository
 		return $this->createQueryBuilder('t')
 			->andWhere('t.isDone = :isDone')
 			->setParameter('isDone', $isDone)
-			->orderBy('t.id', 'ASC')
+			->orderBy('t.id', 'DESC')
 			->getQuery()
 			->getResult();
 	}
