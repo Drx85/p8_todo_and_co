@@ -14,20 +14,22 @@ class TaskFixtures extends Fixture implements DependentFixtureInterface
 	
     public function load(ObjectManager $manager)
 	{
-		$titlesList = fopen('src/DataFixtures/Provider/titles.txt', 'r');
-		$content = fopen('src/DataFixtures/Provider/content.txt', 'r');
+		
+		$titlesList = new \SplFileObject('src/DataFixtures/Provider/titles.txt', 'r');
+		$content = new \SplFileObject('src/DataFixtures/Provider/content.txt', 'r');
+
 		$users = $this->userRepository->findAll();
 		for ($i = 0; $i < 20; $i++) {
 			$task = new Task();
 			$task->setUser($users[mt_rand(0, 11)])
-				->setTitle(fgets($titlesList))
-				->setContent(fgets($content))
+				->setTitle($titlesList->fgets())
+				->setContent($content->fgets())
 				->toggle((bool) mt_rand(0, 1));
 
 			$manager->persist($task);
 		}
-		fclose($titlesList);
-		fclose($content);
+		$titlesList = null;
+		$content = null;
 		$manager->flush();
 	}
 	

@@ -15,18 +15,19 @@ class UserFixtures extends Fixture
 	
 	public function load(ObjectManager $manager)
 	{
-		$usersList = fopen('src/DataFixtures/Provider/user.txt', 'r');
-		$passwordsList = fopen('src/DataFixtures/Provider/password.txt', 'r');
+		$usersList = new \SplFileObject('src/DataFixtures/Provider/user.txt', 'r');
+		$passwordsList = new \SplFileObject('src/DataFixtures/Provider/password.txt', 'r');
+
 		for ($i = 0; $i < 10; $i++) {
 			$user = new User();
-			$username = fgets($usersList);
+			$username = $usersList->fgets();
 			$user->setEmail(strtolower(trim($username)) . "@todo.fr")
 				->setUsername($username)
-				->setPassword($this->passwordHasher->hashPassword($user, fgets($passwordsList)));
+				->setPassword($this->passwordHasher->hashPassword($user, $passwordsList->fgets()));
 			$manager->persist($user);
 		}
-		fclose($usersList);
-		fclose($passwordsList);
+		$usersList = null;
+		$passwordsList = null;
 		
 		//Create 1 admin account, you can set your username, mail, and password
 		$user = new User();
