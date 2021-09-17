@@ -42,6 +42,12 @@ class Task
 	
 	private $user;
 
+	#[ORM\Column(
+		type: "datetime_immutable",
+		nullable: true
+	)]
+	private $updated_at;
+
     public function __construct()
     {
         $this->createdAt = new \Datetime();
@@ -105,6 +111,18 @@ class Task
 	public function setUser(?User $user): self
 	{
 		$this->user = $user;
+		
+		return $this;
+	}
+	
+	public function getUpdatedAt(): ?\DateTimeImmutable
+	{
+		return $this->updated_at;
+	}
+	
+	public function setUpdatedAt(?\DateTimeImmutable $updated_at): self
+	{
+		$this->updated_at = $updated_at;
 		
 		return $this;
 	}

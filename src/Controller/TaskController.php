@@ -19,6 +19,7 @@ class TaskController extends AbstractController
     
     public function listAllTasks(TaskRepository $repository): Response
 	{
+//		$tasks = $repository->findAllWithUsers();
 		$tasks = $repository->findAll();
         return $this->render('task/list.html.twig', compact('tasks'));
     }
@@ -72,6 +73,7 @@ class TaskController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+        	$task->setUpdatedAt(new \DateTimeImmutable());
             $this->getDoctrine()->getManager()->flush();
 
             $this->addFlash('success', 'La tâche a bien été modifiée.');
@@ -89,6 +91,7 @@ class TaskController extends AbstractController
     public function toggleTaskAction(Task $task): RedirectResponse
 	{
         $task->toggle(!$task->isDone());
+		$task->setUpdatedAt(new \DateTimeImmutable());
         $this->getDoctrine()->getManager()->flush();
         if ($task->isDone()) {
 			$this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite.', $task->getTitle()));

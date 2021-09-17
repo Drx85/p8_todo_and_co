@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+	<div class="container-fluid ms-4">
+		<h1 class="mt-4">Oups ! Une erreur est survenue</h1>
+		<p class="mt-4">
+			Un erreur est survenue pendant l'accès à cette page. <a href="{{ path('homepage') }}">Retourner à la page d'accueil</a>.
+		</p>
+	</div>
+{% endblock %}

@@ -22,8 +22,8 @@ class UserFixtures extends Fixture
 			$user = new User();
 			$username = $usersList->fgets();
 			$user->setEmail(strtolower(trim($username)) . "@todo.fr")
-				->setUsername($username)
-				->setPassword($this->passwordHasher->hashPassword($user, $passwordsList->fgets()));
+				->setUsername(trim($username))
+				->setPassword($this->passwordHasher->hashPassword($user, trim($passwordsList->fgets())));
 			$manager->persist($user);
 		}
 		$usersList = null;
