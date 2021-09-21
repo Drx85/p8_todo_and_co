@@ -19,8 +19,8 @@ class TaskController extends AbstractController
     
     public function listAllTasks(TaskRepository $repository): Response
 	{
-//		$tasks = $repository->findAllWithUsers();
-		$tasks = $repository->findAll();
+		$tasks = $repository->findAllWithUsers();
+//		$tasks = $repository->findAll();
         return $this->render('task/list.html.twig', compact('tasks'));
     }
 	
