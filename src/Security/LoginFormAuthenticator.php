@@ -47,9 +47,9 @@ class LoginFormAuthenticator extends AbstractAuthenticator
 			$credentials['username']
 		);
 		return new Passport(
-			new UserBadge($credentials['username']), // Badge pour transporter l'user
-			new PasswordCredentials($credentials['password']), // Badge pour transporter le password
-			[new CsrfTokenBadge('authenticate', $credentials['csrf_token'])] // Badge pour transporter un token CSRF
+			new UserBadge($credentials['username']),
+			new PasswordCredentials($credentials['password']),
+			[new CsrfTokenBadge('authenticate', $credentials['csrf_token'])]
 		);
 	}
 
@@ -72,7 +72,6 @@ class LoginFormAuthenticator extends AbstractAuthenticator
 	
 	public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
 	{
-		
 			return new RedirectResponse($this->urlGenerator->generate('invalid-credentials'));
 	}
 }
