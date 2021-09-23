@@ -100,6 +100,10 @@ symfony s:start
 
 Please see an hosted example version here : *Waiting end of project to share link*
 
+## More documentation
+
+Please open the file [Authentication_FR.md](Authentication_FR.md) (in french) to get more information about how works current Symfony 5.3.7 authentication system
+
 ## Contact
 
 Cédric Deperne - [cedric@deperne.fr](mailto:cedric@deperne.fr)
