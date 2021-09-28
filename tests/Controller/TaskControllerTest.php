@@ -13,6 +13,7 @@ class TaskControllerTest extends WebTestCase
 	private $databaseTool;
 	private $client;
 	private $task;
+	private $testUser;
 	
 	public function setUp(): void
 	{
@@ -62,7 +63,7 @@ class TaskControllerTest extends WebTestCase
 	
 	public function testIndexNotDoneTasks()
 	{
-		$this->loadAnonymousNotDoneTaskandConnectAdminClient();
+		$this->loadAnonymousNotDoneTaskAndConnectClient();
 		$this->client->request('GET', '/tasks-not-finished');
 		$this->assertResponseStatusCodeSame(Response::HTTP_OK);
 		$this->assertSelectorExists('.card');
@@ -88,24 +89,25 @@ class TaskControllerTest extends WebTestCase
 		$this->assertNotNull(self::getContainer()->get(TaskRepository::class)->findOneBy(['user' => $testUser]));
 	}
 	
-	public function testSuccessfullEditTask()
+	public function testSuccessfullEditTaskAsUserLinkedToTask()
 	{
 		$this->loadTaskAndConnectClient();
-		$crawler = $this->client->request('POST', '/tasks/' . $this->task->getId() . '/edit');
-		$form = $crawler->selectButton('Modifier')->form([
-			'task[title]' => 'editsuccess',
-			'task[content]' => 'editsuccess'
-		]);
-		$this->client->submit($form);
-		$this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
-		$this->assertResponseRedirects('/tasks');
-		$this->client->followRedirect();
-		$this->assertSelectorTextContains('.alert-success', "La tâche a bien été modifiée.");
-		$this->assertNotNull(self::getContainer()->get(TaskRepository::class)->findOneBy(['title' => 'editsuccess']));
-		$this->assertNotNull(self::getContainer()->get(TaskRepository::class)->findOneBy(['content' => 'editsuccess']));
+		$this->testSuccessfullEditTask();
 	}
 	
-	public function testSuccessFullToggleTask()
+	public function testSuccessfullEditTaskAsUserNotLinkedToTask()
+	{
+		$this->loadTaskAndConnectClient('user');
+		$this->testSuccessfullEditTask();
+	}
+	
+	public function testSuccessfullEditTaskAsAdminNotLinkedToTask()
+	{
+		$this->loadTaskAndConnectClient('admin');
+		$this->testSuccessfullEditTask();
+	}
+	
+	public function testSuccessfullToggleTask()
 	{
 		$this->loadTaskAndConnectClient();
 		$this->client->request('POST', '/tasks/' . $this->task->getId() . '/toggle');
@@ -117,9 +119,9 @@ class TaskControllerTest extends WebTestCase
 		$this->assertTrue(!$updatedTask->isDone());
 	}
 	
-	public function testSuccessFullReverseToggleTask()
+	public function testSuccessfullReverseToggleTask()
 	{
-		$this->loadAnonymousNotDoneTaskandConnectAdminClient();
+		$this->loadAnonymousNotDoneTaskAndConnectClient();
 		$this->client->request('POST', '/tasks/' . $this->task->getId() . '/toggle');
 		$this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
 		$this->assertResponseRedirects('/tasks');
@@ -142,14 +144,21 @@ class TaskControllerTest extends WebTestCase
 	
 	public function testInvalidDeleteTaskWithUserNotLinkedToIt()
 	{
-		$this->loadTaskAndConnectClient(true);
+		$this->loadTaskAndConnectClient('user');
 		$this->client->request('POST', '/tasks/' . $this->task->getId() . '/delete');
 		$this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
 	}
 	
-	public function testSuccessfullDeleteAnonymousTask()
+	public function testInvalidDeleteTaskWithAdminNotLinkedToIt()
 	{
-		$this->loadAnonymousNotDoneTaskandConnectAdminClient();
+		$this->loadTaskAndConnectClient('admin');
+		$this->client->request('POST', '/tasks/' . $this->task->getId() . '/delete');
+		$this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+	}
+	
+	public function testSuccessfullDeleteAnonymousTaskAsAdmin()
+	{
+		$this->loadAnonymousNotDoneTaskAndConnectClient();
 		$this->client->request('POST', '/tasks/' . $this->task->getId() . '/delete');
 		$this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
 		$this->assertResponseRedirects('/tasks');
@@ -158,29 +167,56 @@ class TaskControllerTest extends WebTestCase
 		$this->assertNull(self::getContainer()->get(TaskRepository::class)->findOneBy(['content' => 'editsuccess']));
 	}
 	
+	public function testInvalidDeleteAnonymousTaskAsUser()
+	{
+		$this->loadAnonymousNotDoneTaskAndConnectClient(false);
+		$this->client->request('POST', '/tasks/' . $this->task->getId() . '/delete');
+		$this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+	}
+	
 	/**
-	 * @param bool $userNotLinkedToTask
+	 * @param bool|string $notLinkedToTask
 	 */
-	private function loadTaskAndConnectClient(bool $userNotLinkedToTask = false)
+	private function loadTaskAndConnectClient(bool|string $notLinkedToTask = false)
 	{
 		$this->databaseTool->loadAliceFixture([dirname(__DIR__) . '/Fixtures/task_user.yaml']);
 		$userRepository = static::getContainer()->get(UserRepository::class);
-		$testUser = $userRepository->findOneBy(['username' => 'test']);
-		if ($userNotLinkedToTask) $testUser = $userRepository->findOneBy(['username' => 'user_not_linked']);
-		
+		$testUser = match ($notLinkedToTask) {
+			false => $userRepository->findOneBy(['username' => 'test']),
+			'user' => $userRepository->findOneBy(['username' => 'user_not_linked']),
+			'admin' => $userRepository->findOneBy(['username' => 'admin'])
+		};
 		$userRepository = static::getContainer()->get(TaskRepository::class);
 		$this->task = $userRepository->findOneBy(['title' => 'test']);
-		
 		$this->client->loginUser($testUser);
 	}
 	
-	private function loadAnonymousNotDoneTaskandConnectAdminClient()
+	private function loadAnonymousNotDoneTaskAndConnectClient(bool $asAdmin = true)
 	{
 		$this->databaseTool->loadAliceFixture([dirname(__DIR__) . '/Fixtures/task_user.yaml']);
 		$userRepository = static::getContainer()->get(UserRepository::class);
-		$testUser = $userRepository->findOneBy(['username' => 'admin']);
+		$this->testUser = $userRepository->findOneBy(['username' => 'admin']);
+		if ($asAdmin === false) $this->testUser = $userRepository->findOneBy(['username' => 'test']);
 		$userRepository = static::getContainer()->get(TaskRepository::class);
 		$this->task = $userRepository->findOneBy(['title' => 'anonymous_task']);
-		$this->client->loginUser($testUser);
+		$this->client->loginUser($this->testUser);
+	}
+	
+	private function testSuccessfullEditTask()
+	{
+		$crawler = $this->client->request('POST', '/tasks/' . $this->task->getId() . '/edit');
+		$form = $crawler->selectButton('Modifier')->form([
+			'task[title]' => 'editsuccess',
+			'task[content]' => 'editsuccess'
+		]);
+		$this->client->submit($form);
+		$this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+		$this->assertResponseRedirects('/tasks');
+		$this->client->followRedirect();
+		$this->assertSelectorTextContains('.alert-success', "La tâche a bien été modifiée.");
+		$taskByTitle = self::getContainer()->get(TaskRepository::class)->findOneBy(['title' => 'editsuccess']);
+		$this->assertNotNull($taskByTitle);
+		$this->assertNotNull(self::getContainer()->get(TaskRepository::class)->findOneBy(['content' => 'editsuccess']));
+		$this->assertNotEquals($taskByTitle->getUser(), $this->testUser);
 	}
 }

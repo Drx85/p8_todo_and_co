@@ -61,17 +61,17 @@ class LoginFormAuthenticator extends AbstractAuthenticator
         return $credentials['password'];
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $providerKey): ?Response
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
+        if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }
-	
 		return new RedirectResponse($this->urlGenerator->generate('homepage'));
     }
 	
 	public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
 	{
-			return new RedirectResponse($this->urlGenerator->generate('invalid-credentials'));
+		if ($request->hasSession()) $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
+		return new RedirectResponse($this->urlGenerator->generate(self::LOGIN_ROUTE));
 	}
 }

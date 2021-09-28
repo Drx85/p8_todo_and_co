@@ -81,9 +81,7 @@ class UserControllerTest extends WebTestCase
 		$this->loadUserAndConnectClient(true);
 		$crawler = $this->client->request('POST', '/users/' . $this->user->getId() . '/edit');
 		$form = $crawler->selectButton('Modifier')->form([
-			'user[username]' => 'editsuccess',
-			'user[password][first]' => 'testtest',
-			'user[password][second]' => 'testtest'
+			'user[username]' => 'editsuccess'
 		]);
 		$this->client->submit($form);
 		$this->assertResponseStatusCodeSame(Response::HTTP_FOUND);

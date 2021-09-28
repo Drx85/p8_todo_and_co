@@ -27,26 +27,62 @@ class SecurityControllerTest extends WebTestCase
 		$this->assertSelectorNotExists('.alert.alert-danger');
 	}
 	
-	public function testRedirectLoginWithBadCredentials()
+	public function testRedirectLoginWithBadPassword()
 	{
-		$this->fillAndSubmitBadForm($this->client);
-		$this->assertResponseRedirects('/login/invalid-credentials');
+		$this->fillAndSubmitBadPassword($this->client);
+		$this->assertResponseRedirects('/login');
 	}
 	
-	public function testFlashMessageLoginWithBadCredentials()
+	public function testFlashMessageLoginWithBadPassword()
 	{
 		$this->client->followRedirects(true);
-		$this->fillAndSubmitBadForm($this->client);
+		$this->fillAndSubmitBadUsername($this->client);
 		$this->assertSelectorExists('.alert.alert-danger');
 	}
 	
-	public function testLoginWithNotCsrfToken()
+	public function testRedirectLoginWithBadUsername()
+	{
+		$this->fillAndSubmitBadPassword($this->client);
+		$this->assertResponseRedirects('/login');
+	}
+	
+	public function testFlashMessageLoginWithBadUsername()
+	{
+		$this->client->followRedirects(true);
+		$this->fillAndSubmitBadUsername($this->client);
+		$this->assertSelectorExists('.alert.alert-danger');
+	}
+	
+	public function testRedirectLoginWithBadUsernameAndPassword()
+	{
+		$this->fillAndSubmitBadUsernameAndPassword($this->client);
+		$this->assertResponseRedirects('/login');
+	}
+	
+	public function testFlashMessageLoginWithBadUsernameAndPassword()
+	{
+		$this->client->followRedirects(true);
+		$this->fillAndSubmitBadUsernameAndPassword($this->client);
+		$this->assertSelectorExists('.alert.alert-danger');
+	}
+	
+	public function testRedirectLoginWithNotCsrfToken()
 	{
 		$this->client->request('POST', '/login', [
 			'username' => 'test',
-			'password' => 'badpassword'
+			'password' => 'testtest'
 		]);
-		$this->assertResponseRedirects('/login/invalid-credentials');
+		$this->assertResponseRedirects('/login');
+	}
+	
+	public function testFlashMessageLoginWithNotCsrfToken()
+	{
+		$this->client->followRedirects(true);
+		$this->client->request('POST', '/login', [
+			'username' => 'test',
+			'password' => 'testtest'
+		]);
+		$this->assertSelectorExists('.alert.alert-danger');
 	}
 	
 	public function testSuccessfullLogin()
@@ -75,11 +111,31 @@ class SecurityControllerTest extends WebTestCase
 		$this->assertIsNotObject(unserialize($this->client->getContainer()->get('session')->get('_security_main')));
 	}
 	
-	private function fillAndSubmitBadForm($client)
+	private function fillAndSubmitBadPassword($client)
 	{
 		$crawler = $client->request('GET', '/login');
 		$form = $crawler->selectButton('Se connecter')->form([
 			'username' => 'test',
+			'password' => 'badpassword'
+		]);
+		$client->submit($form);
+	}
+	
+	private function fillAndSubmitBadUsername($client)
+	{
+		$crawler = $client->request('GET', '/login');
+		$form = $crawler->selectButton('Se connecter')->form([
+			'username' => 'badusername',
+			'password' => 'testtest'
+		]);
+		$client->submit($form);
+	}
+	
+	private function fillAndSubmitBadUsernameAndPassword($client)
+	{
+		$crawler = $client->request('GET', '/login');
+		$form = $crawler->selectButton('Se connecter')->form([
+			'username' => 'badusername',
 			'password' => 'badpassword'
 		]);
 		$client->submit($form);

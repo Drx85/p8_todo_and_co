@@ -3,7 +3,7 @@
 {% block header_img %}<img class="slide-image" src="{{ asset('img/todolist_content.jpg') }}" alt="todo list">{% endblock %}
 
 {% block body %}
-	<a href="{{ path('task_create') }}" class="btn btn-info pull-right text-white mt-3">Créer une tâche</a>
+	{{ include ('task/_tasks_buttons.html.twig') }}
 	<div class="row row-cols-lg-3 row-cols-md-2 row-cols-1">
 		{% for task in tasks %}
 

@@ -54,7 +54,7 @@ class UserController extends AbstractController
 	
     public function editAction(User $user, Request $request)
     {
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserType::class, $user, ['askPassword' => false]);
 
         $form->handleRequest($request);
 
@@ -70,12 +70,4 @@ class UserController extends AbstractController
 
         return $this->render('user/edit.html.twig', ['form' => $form->createView(), 'user' => $user]);
     }
-		
-	#[Route('/login/invalid-credentials', name: 'invalid-credentials')]
-	
-	public function invalidCredentials(): Response
-	{
-		$this->addFlash('error','Informations de connexion incorrectes.');
-		return $this->redirectToRoute('homepage');
-	}
 }
