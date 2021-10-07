@@ -37,6 +37,10 @@
 		<include>
 			<directory suffix=".php">src</directory>
 		</include>
+		<exclude>
+			<file>src/kernel.php</file>
+			<directory>src/DataFixtures</directory>
+		</exclude>
 	</coverage>
 
 <!--    <filter>
