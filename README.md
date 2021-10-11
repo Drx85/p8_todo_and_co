@@ -94,15 +94,10 @@ php bin/console doctrine:fixtures:load
 symfony s:start
 ```
 
-## Usage
-
-### Online example version
-
-Please see an hosted example version here : *Waiting end of project to share link*
-
 ## More documentation
 
-Please open the file [Authentication_FR.pdf](Authentication_FR.pdf) (in french) to get more information about how works current Symfony 5.3.7 authentication system
+*   Please open the file [Authentication_FR.pdf](Authentication_FR.pdf) (in french) to get more information about how works current Symfony 5.3.7 authentication system. 
+*   [Code quality & performances PDF file](Code_quality_and_performances_FR.pdf) (in french) explains current code quality and show old application performances compared to current performances.
 
 ## Contact
 

@@ -28,8 +28,8 @@ Please provide all necessary information and be more accurate as possible, that 
 
 ### Commits
 
-* Use the present tense : ✔️  "Add feature", ❌   "Added feature"
-* Be as concise as possible
+*   Use the present tense : ✔️  "Add feature", ❌   "Added feature"
+*   Be as concise as possible
 
 ## Contact me
 
